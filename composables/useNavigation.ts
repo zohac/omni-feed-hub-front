@@ -1,12 +1,7 @@
-import {
-  HomeIcon,
-  RssIcon,
-} from '@heroicons/vue/24/outline'
-
 export const useNavigation = () => {
   const navigation = [
-    { name: 'Dashboard', href: '/', icon: HomeIcon },
-    { name: 'Feeds', href: '/feeds', icon: RssIcon },
+    { label: 'Dashboard', to: '/', icon: 'i-heroicons-home' },
+    { label: 'All Feeds', to: '/feeds', icon: 'i-heroicons-rss'},
   ]
 
   return {

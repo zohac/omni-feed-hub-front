@@ -1,12 +1,13 @@
+import axios, { AxiosError } from 'axios'
 import { defineStore } from 'pinia'
-import axios from 'axios'
-import type { CreateRssFeedDto, UpdateRssFeedDto } from "~/types/rssFeed";
-import  { RssFeed } from "~/types/rssFeed";
-
+import { prepareCreateDto, prepareUpdateDto } from '~/services/rssFeedService'
+import type { CreateRssFeedDto, UpdateRssFeedDto } from '~/types/dtos/RssFeedDto'
+import type { ApiErrorMessage } from '~/types/entities/ApiErrorMessage'
+import { RssFeed } from '~/types/entities/RssFeed'
 
 export const useFeedStore = defineStore('feed', {
   state: () => ({
-    feeds: [],
+    feeds: [] as RssFeed[],
     feed: null
   }),
   actions: {
@@ -20,33 +21,29 @@ export const useFeedStore = defineStore('feed', {
       }
     },
 
-    async fetchFeedById(id: number) {
-      const apiBase = useRuntimeConfig().public.apiBase
-      try {
-        const { data } = await axios.get(`${apiBase}/feeds/${id}`)
-        this.feed = data
-      } catch (error) {
-        console.error('Flux introuvable:', error)
-      }
-    },
-
     async createFeed(feedData: CreateRssFeedDto) {
       const apiBase = useRuntimeConfig().public.apiBase
+      const dto = prepareCreateDto(feedData)
+
       try {
-        const { data } = await axios.post(`${apiBase}/feeds`, feedData)
+        const { data } = await axios.post(`${apiBase}/feeds`, dto)
         this.feeds.push(data)
+        return { success: true, message: 'Flux ajouté avec succès' }
       } catch (error) {
-        console.error('Erreur lors de la création du flux:', error)
+        return this.handleApiError(error, 'Erreur lors de la création du flux')
       }
     },
 
     async updateFeed(id: number, updatedData: UpdateRssFeedDto) {
       const apiBase = useRuntimeConfig().public.apiBase
+      const dto = prepareUpdateDto(updatedData)
+
       try {
-        await axios.put(`${apiBase}/feeds/${id}`, updatedData)
+        await axios.put(`${apiBase}/feeds/${id}`, dto)
         await this.fetchFeeds()
+        return { success: true, message: 'Flux mis à jour avec succès' }
       } catch (error) {
-        console.error('Erreur lors de la mise à jour du flux:', error)
+        return this.handleApiError(error, 'Erreur lors de la mise à jour du flux')
       }
     },
 
@@ -54,9 +51,24 @@ export const useFeedStore = defineStore('feed', {
       const apiBase = useRuntimeConfig().public.apiBase
       try {
         await axios.delete(`${apiBase}/feeds/${id}`)
-        this.feeds = this.feeds.filter(feed => feed.id !== id)
+        this.feeds = this.feeds.filter((feed) => feed.id !== id)
+        return { success: true, message: 'Flux supprimé avec succès' }
       } catch (error) {
-        console.error('Erreur lors de la suppression du flux:', error)
+        return this.handleApiError(error, 'Erreur lors de la suppression du flux')
+      }
+    },
+
+    // Gestion des erreurs API
+    handleApiError(error: unknown, defaultMessage: string) {
+      if (axios.isAxiosError(error)) {
+        const axiosError = error as AxiosError
+        const data = axiosError.response?.data as ApiErrorMessage
+        const message = data?.message || axiosError.message || defaultMessage
+        // console.error(message)
+        return { success: false, message }
+      } else {
+        // console.error(defaultMessage, error)
+        return { success: false, message: defaultMessage }
       }
     }
   }

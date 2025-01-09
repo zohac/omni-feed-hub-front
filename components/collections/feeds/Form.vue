@@ -2,14 +2,15 @@
   <v-card class="mx-auto" width="400">
     <template v-slot:title>
       <span class="font-weight-black">
-        {{ isNewFeed ? 'Ajouter un nouveau flux' : 'Modifier le flux' }}
+        {{
+          isNewFeedCollection ? 'Ajouter une nouvelle Collection de flux' : 'Modifier la Collection'
+        }}
       </span>
     </template>
 
     <v-card-text>
       <v-form @submit.prevent="onSubmit">
-        <v-text-field v-model="title" :error-messages="errors.title" label="Title" />
-        <v-text-field v-model="url" :error-messages="errors.url" label="URL" />
+        <v-text-field v-model="name" :error-messages="errors.name" label="Name" />
         <v-text-field
           v-model="description"
           :error-messages="errors.description"
@@ -17,7 +18,7 @@
         />
 
         <v-btn color="primary" type="submit" variant="flat">
-          {{ isNewFeed ? 'Créer' : 'Mettre à jour' }}
+          {{ isNewFeedCollection ? 'Créer' : 'Mettre à jour' }}
         </v-btn>
       </v-form>
     </v-card-text>
@@ -25,12 +26,13 @@
 </template>
 
 <script lang="ts" setup>
+// components/collections/feeds/Form.vue
 import { useForm } from 'vee-validate'
-import * as yup from 'yup'
+import * as yup from 'yup' // Définition des props
 
 // Définition des props
 const props = defineProps({
-  isNewFeed: Boolean,
+  isNewFeedCollection: Boolean,
   formData: {
     type: Object,
     required: true
@@ -42,8 +44,7 @@ const emit = defineEmits(['formSubmit'])
 
 // Schéma de validation Yup
 const schema = yup.object({
-  title: yup.string().required('Titre requis').min(3, 'Minimum 3 caractères'),
-  url: yup.string().required('URL requise').url('URL invalide'),
+  name: yup.string().required('Nom requis').min(3, 'Minimum 3 caractères'),
   description: yup.string().max(200, 'Maximum 200 caractères')
 })
 
@@ -54,8 +55,7 @@ const { defineField, handleSubmit, errors, resetForm } = useForm({
 })
 
 // Liaison des champs
-const [title] = defineField('title')
-const [url] = defineField('url')
+const [name] = defineField('name')
 const [description] = defineField('description')
 
 // Validation et soumission

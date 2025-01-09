@@ -1,11 +1,11 @@
 <template>
   <v-row>
     <v-col>
-      <h1>Gestion des Flux RSS</h1>
+      <h1>Gestion des Collections de Flux RSS</h1>
     </v-col>
 
     <v-col class="d-flex justify-end align-center">
-      <v-btn color="primary" text="Ajouter un Flux Rss" @click="newFeed" />
+      <v-btn color="primary" text="Ajouter une Collection de Flux Rss" @click="newFeedCollection" />
     </v-col>
   </v-row>
 
@@ -13,10 +13,10 @@
     <v-col>
       <v-data-table
         :headers="headers"
-        :items="feedStore.feeds"
+        :items="feedCollectionStore.feedsCollection"
         class="elevation-1"
         item-value="id"
-        @update:options="feedStore.fetchFeeds()"
+        @update:options="feedCollectionStore.fetchFeedsCollection()"
       >
         <template v-slot:item.actions="{ item }">
           <v-btn
@@ -42,7 +42,11 @@
 
   <!-- Formulaire de création -->
   <v-dialog v-model="isOpen" class="d-flex align-center justify-center" max-width="500">
-    <FeedsForm :form-data="form" :is-new-feed="isNewFeed" @form-submit="submitForm" />
+    <CollectionsFeedsForm
+      :form-data="form"
+      :is-new-feed-collection="isNewFeedCollection"
+      @form-submit="submitForm"
+    />
   </v-dialog>
 
   <!-- Snackbar pour les Messages Flash -->
@@ -50,17 +54,19 @@
 </template>
 
 <script lang="ts" setup>
-// components/feeds/List.vue
-import { useFeedStore } from '~/stores/feedStore'
-import type { CreateRssFeedDto, UpdateRssFeedDto } from '~/types/dtos/RssFeedDto'
-import type { RssFeed } from '~/types/entities/RssFeed'
+// components/collections/feeds/List.vue
+import { useFeedCollectionStore } from '~/stores/feedCollectionStore'
+import type {
+  CreateRssFeedCollectionDto,
+  UpdateRssFeedCollectionDto
+} from '~/types/dtos/RssFeedCollectionDto'
+import type { RssFeedCollection } from '~/types/entities/RssFeedCollection'
 
-const feedStore = useFeedStore()
+const feedCollectionStore = useFeedCollectionStore()
 const isOpen = ref(false)
-const isNewFeed = ref(false)
+const isNewFeedCollection = ref(false)
 const headers = [
-  { title: 'Titre', align: 'start', key: 'title' },
-  { title: 'URL', align: 'start', key: 'url' },
+  { title: 'Name', align: 'start', key: 'name' },
   { title: 'Description', align: 'start', key: 'description' },
   { title: 'Actions', align: 'start', key: 'actions', sortable: false }
 ]
@@ -72,21 +78,19 @@ const snackbar = ref({
   color: 'success'
 })
 
-const form = ref<CreateRssFeedDto>({
-  title: '',
-  url: '',
-  description: '',
-  collectionId: undefined
+const form = ref<CreateRssFeedCollectionDto>({
+  name: '',
+  description: ''
 })
 
 // Créer ou mettre à jour un flux
-const submitForm = async (values: CreateRssFeedDto | UpdateRssFeedDto) => {
+const submitForm = async (values: CreateRssFeedCollectionDto | UpdateRssFeedCollectionDto) => {
   let response
-  if (isNewFeed.value) {
-    response = await feedStore.createFeed(values as CreateRssFeedDto)
+  if (isNewFeedCollection.value) {
+    response = await feedCollectionStore.createFeedCollection(values as CreateRssFeedCollectionDto)
   } else if (isUpdateDto(values)) {
     const { id, ...dto } = values
-    response = await feedStore.updateFeed(id!, dto)
+    response = await feedCollectionStore.updateFeedCollection(id!, dto)
   } else {
     console.error('Le DTO pour la mise à jour est invalide.')
     return
@@ -98,15 +102,17 @@ const submitForm = async (values: CreateRssFeedDto | UpdateRssFeedDto) => {
   if (response.success) closeModal()
 }
 
-// Type guard pour vérifier si l'objet est UpdateRssFeedDto
-function isUpdateDto(dto: CreateRssFeedDto | UpdateRssFeedDto): dto is UpdateRssFeedDto {
+// Type guard pour vérifier si l'objet est CreateRssFeedCollectionDto
+function isUpdateDto(
+  dto: CreateRssFeedCollectionDto | UpdateRssFeedCollectionDto
+): dto is UpdateRssFeedCollectionDto {
   return 'id' in dto
 }
 
 // Supprimer un flux
-const deleteFeed = async (feed: RssFeed) => {
+const deleteFeed = async (feed: RssFeedCollection) => {
   if (confirm('Voulez-vous vraiment supprimer ce flux ?')) {
-    const response = await feedStore.deleteFeed(feed.id)
+    const response = await feedCollectionStore.deleteFeedCollection(feed.id)
 
     for (const message of response.message) {
       showSnackbar(message, response.success ? 'success' : 'error')
@@ -115,22 +121,22 @@ const deleteFeed = async (feed: RssFeed) => {
 }
 
 // Préparer la modification (fonction à compléter)
-const updateFeed = (rssFeed: RssFeed) => {
-  const feed = feedStore.feeds.find((feed) => feed.id === rssFeed.id)
+const updateFeed = (rssFeed: RssFeedCollection) => {
+  const feed = feedCollectionStore.feedsCollection.find((feed) => feed.id === rssFeed.id)
   form.value = { ...feed }
   isOpen.value = true
-  isNewFeed.value = false
+  isNewFeedCollection.value = false
 }
 
-const newFeed = () => {
+const newFeedCollection = () => {
   form.value = {
-    title: '',
-    url: '',
-    description: '',
-    collectionId: undefined
+    name: '',
+    description: ''
   }
   isOpen.value = true
-  isNewFeed.value = true
+  isNewFeedCollection.value = true
+
+  console.log(isNewFeedCollection.value)
 }
 
 // Afficher les messages flash
@@ -143,6 +149,6 @@ const showSnackbar = (message: string, color: 'success' | 'error') => {
 // Fermer la modale
 const closeModal = () => {
   isOpen.value = false
-  form.value = { title: '', url: '', description: '', collectionId: undefined }
+  form.value = { name: '', description: '' }
 }
 </script>

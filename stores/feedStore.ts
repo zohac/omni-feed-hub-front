@@ -8,7 +8,7 @@ import { RssFeed } from '~/types/entities/RssFeed'
 export const useFeedStore = defineStore('feed', {
   state: () => ({
     feeds: [] as RssFeed[],
-    feed: null
+    feed: null as RssFeed | null
   }),
   actions: {
     async fetchFeeds() {
@@ -18,6 +18,16 @@ export const useFeedStore = defineStore('feed', {
         this.feeds = data as RssFeed[]
       } catch (error) {
         console.error('Erreur lors de la récupération des flux RSS:', error)
+      }
+    },
+
+    async fetchFeedById(id: number) {
+      const apiBase = useRuntimeConfig().public.apiBase
+      try {
+        const { data } = await axios.get(`${apiBase}/feeds/${id}`)
+        this.feed = data as RssFeed
+      } catch (error) {
+        console.error('Erreur lors de la récupération du flux RSS:', error)
       }
     },
 
@@ -36,11 +46,13 @@ export const useFeedStore = defineStore('feed', {
 
     async updateFeed(id: number, updatedData: UpdateRssFeedDto) {
       const apiBase = useRuntimeConfig().public.apiBase
+      console.log(updatedData)
       const dto = prepareUpdateDto(updatedData)
 
       try {
         await axios.put(`${apiBase}/feeds/${id}`, dto)
         await this.fetchFeeds()
+        await this.fetchFeedById(id)
         return { success: true, message: 'Flux mis à jour avec succès' }
       } catch (error) {
         return this.handleApiError(error, 'Erreur lors de la mise à jour du flux')

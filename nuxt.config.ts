@@ -37,5 +37,6 @@ export default defineNuxtConfig({
         transformAssetUrls
       }
     }
-  }
+  },
+  pages: true
 })

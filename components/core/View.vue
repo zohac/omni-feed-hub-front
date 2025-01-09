@@ -1,8 +1,6 @@
 <template>
   <v-main class="bg-grey-lighten-5" min-height="100vh">
-    <v-container>
-      <NuxtPage />
-    </v-container>
+    <NuxtPage />
   </v-main>
 </template>
 

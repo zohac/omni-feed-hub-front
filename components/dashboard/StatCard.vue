@@ -11,6 +11,7 @@
 </template>
 
 <script lang="ts" setup>
+// components/dashboard/StatCard
 defineProps({
   title: {
     type: String,

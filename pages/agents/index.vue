@@ -1,6 +1,6 @@
 <template>
   <v-container>
-    <h1>Agents</h1>
+    <AgentsList />
   </v-container>
 </template>
 

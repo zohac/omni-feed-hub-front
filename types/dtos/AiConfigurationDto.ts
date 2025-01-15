@@ -8,6 +8,7 @@ export class CreateAiConfigurationDto {
 }
 
 export class UpdateAiConfigurationDto {
+  id?: number
   model?: string
   prompt?: string
   stream?: boolean

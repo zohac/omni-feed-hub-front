@@ -2,7 +2,6 @@
 
 import axios, { AxiosError } from 'axios'
 import { defineStore } from 'pinia'
-import { prepareCreateDto, prepareUpdateDto } from '~/services/aiAgentService'
 import type { CreateAiAgentDto, UpdateAiAgentDto } from '~/types/dtos/AiAgentDto'
 import type { AiAgent } from '~/types/entities/AiAgent'
 import type { ApiErrorMessage } from '~/types/entities/ApiErrorMessage'
@@ -33,28 +32,29 @@ export const useAgentStore = defineStore('agent', {
       }
     },
 
-    async createAgent(agentData: CreateAiAgentDto) {
+    async createAgent(dto: CreateAiAgentDto) {
       const apiBase = useRuntimeConfig().public.apiBase
-      const dto = prepareCreateDto(agentData)
 
       try {
         const { data } = await axios.post(`${apiBase}/agents`, dto)
+
         this.agents.push(data)
-        return { success: true, message: 'Flux ajouté avec succès' }
+        await this.fetchAgents()
+
+        return { success: true, message: ['Agent IA ajouté avec succès'] }
       } catch (error) {
         return this.handleApiError(error, 'Erreur lors de la création du flux')
       }
     },
 
-    async updateAgent(id: number, updatedData: UpdateAiAgentDto) {
+    async updateAgent(id: number, dto: UpdateAiAgentDto) {
       const apiBase = useRuntimeConfig().public.apiBase
-      const dto = prepareUpdateDto(updatedData)
 
       try {
         await axios.put(`${apiBase}/agents/${id}`, dto)
         await this.fetchAgents()
         await this.fetchAgentById(id)
-        return { success: true, message: 'Flux mis à jour avec succès' }
+        return { success: true, message: ['Agent IA mis à jour avec succès'] }
       } catch (error) {
         return this.handleApiError(error, 'Erreur lors de la mise à jour du flux')
       }
@@ -65,7 +65,7 @@ export const useAgentStore = defineStore('agent', {
       try {
         await axios.delete(`${apiBase}/agents/${id}`)
         this.agents = this.agents.filter((agent) => agent.id !== id)
-        return { success: true, message: 'Flux supprimé avec succès' }
+        return { success: true, message: ['Agent IA supprimé avec succès'] }
       } catch (error) {
         return this.handleApiError(error, 'Erreur lors de la suppression du flux')
       }

@@ -1,7 +1,6 @@
 <template>
   <v-container>
-    <AgentsList />
-    <ActionsList />
+    <CollectionsArticlesList />
   </v-container>
 </template>
 

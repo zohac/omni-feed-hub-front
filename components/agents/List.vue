@@ -44,27 +44,30 @@
       </v-col>
     </v-row>
 
-    <!-- Formulaire dans un dialogue -->
-    <v-dialog v-model="isOpen" class="d-flex align-center justify-center" max-width="600">
-      <AgentsForm :form-data="form" :is-new-agent="isNewAgent" @form-submit="submitForm" />
-    </v-dialog>
-
-    <!-- Snackbar pour les messages -->
-    <CoreAppSnackbar v-model="snackbar.show" :color="snackbar.color" :message="snackbar.message" />
+    <!-- Composant de détails -->
+    <AgentsDetailsDrawer
+      :agent="selectedAgent"
+      :is-open="isOpen"
+      @close="closeSidebar"
+      @edit="updateAgent"
+      @fetch-agents="fetchAgents"
+    />
   </v-container>
+
+  <!-- Snackbar pour les messages -->
+  <CoreAppSnackbar v-model="snackbar.show" :color="snackbar.color" :message="snackbar.message" />
 </template>
 
 <script lang="ts" setup>
 import { onMounted, ref } from 'vue'
 import { useAgentStore } from '~/stores/agentStore'
-import type { CreateAiAgentDto, UpdateAiAgentDto } from '~/types/dtos/AiAgentDto'
-import type { AiAgent } from '~/types/entities/AiAgent'
-
-const agentStore = useAgentStore()
+import type { AiAgent } from '~/types/entities/AiAgent' // État local
 
 // État local
-const isOpen = ref(false)
-const isNewAgent = ref(false)
+const agentStore = useAgentStore()
+const isOpen = ref(false) // Contrôle de la barre latérale
+const selectedAgent = ref<AiAgent | null>(null) // Agent sélectionné
+const agents = ref<AiAgent[]>([])
 const snackbar = ref({
   show: false,
   message: '',
@@ -80,21 +83,7 @@ const headers = [
   { title: 'Actions', align: 'start', key: 'actions', sortable: false }
 ]
 
-const form = ref<Partial<CreateAiAgentDto>>({
-  name: '',
-  description: '',
-  provider: undefined,
-  role: undefined,
-  configuration: {
-    model: '',
-    prompt: '',
-    stream: false,
-    temperature: 0.7 // Température par défaut
-  }
-})
-
 // Chargement des agents
-const agents = ref<AiAgent[]>([])
 onMounted(async () => {
   await fetchAgents()
 })
@@ -104,11 +93,16 @@ const fetchAgents = async () => {
   agents.value = agentStore.agents
 }
 
+// Créer un nouvel agent avec température par défaut
+const newAgent = () => {
+  selectedAgent.value = null
+  isOpen.value = true
+}
+
 // Actions de modification
 const updateAgent = (agent: AiAgent) => {
-  form.value = { ...agent }
+  selectedAgent.value = agent
   isOpen.value = true
-  isNewAgent.value = false
 }
 
 // Action de suppression
@@ -123,59 +117,6 @@ const deleteAgent = async (agent: AiAgent) => {
   }
 }
 
-// Créer un nouvel agent avec température par défaut
-const newAgent = () => {
-  form.value = {
-    name: '',
-    description: '',
-    provider: undefined,
-    role: undefined,
-    configuration: {
-      model: '',
-      prompt: '',
-      stream: false,
-      temperature: 0.7 // Température par défaut
-    }
-  }
-  isOpen.value = true
-  isNewAgent.value = true
-}
-
-// Soumission du formulaire
-const submitForm = async (values: CreateAiAgentDto | UpdateAiAgentDto) => {
-  let response
-  if (isNewAgent.value) {
-    response = await agentStore.createAgent(values as CreateAiAgentDto)
-  } else if (isUpdateDto(values)) {
-    const dto = removeIdFromUpdateAiAgentDto(values)
-    const { id, ...configurationDto } = dto.configuration
-    dto.configuration = configurationDto
-    response = await agentStore.updateAgent(id, dto)
-  } else {
-    console.error('Le DTO pour la mise à jour est invalide.')
-    return
-  }
-
-  for (const message of response.message) {
-    showSnackbar(message, response.success ? 'success' : 'error')
-  }
-  if (response.success) {
-    closeModal()
-    await fetchAgents()
-  }
-}
-
-function removeIdFromUpdateAiAgentDto(values: UpdateAiAgentDto): UpdateAiAgentDto {
-  const { id, _actions, ...dto } = values
-
-  return dto
-}
-
-// Type guard pour vérifier si l'objet est UpdateRssFeedDto
-function isUpdateDto(dto: CreateAiAgentDto | UpdateAiAgentDto): dto is UpdateAiAgentDto {
-  return 'id' in dto
-}
-
 // Afficher un message Snackbar
 const showSnackbar = (message: string, color: 'success' | 'error') => {
   snackbar.value.message = message
@@ -183,9 +124,9 @@ const showSnackbar = (message: string, color: 'success' | 'error') => {
   snackbar.value.show = true
 }
 
-// Fermer la modale
-const closeModal = () => {
+// Fermer la barre latérale
+const closeSidebar = () => {
   isOpen.value = false
-  form.value = {}
+  selectedAgent.value = null
 }
 </script>

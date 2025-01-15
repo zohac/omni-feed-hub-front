@@ -1,70 +1,89 @@
 <template>
-  <v-card class="mx-auto" width="600">
-    <template v-slot:title>
-      <h2>{{ isNewAgent ? 'Créer un nouvel Agent IA' : "Modifier l'Agent IA" }}</h2>
-    </template>
+  <v-container class="mx-auto">
+    <v-form @submit.prevent="onSubmit">
+      <!-- Nom -->
+      <v-text-field
+        v-model="name"
+        :error-messages="errors.name"
+        density="compact"
+        label="Nom de l'Agent"
+        required
+      />
 
-    <v-card-text>
-      <v-form @submit.prevent="onSubmit">
-        <!-- Nom -->
-        <v-text-field
-          v-model="name"
-          :error-messages="errors.name"
-          label="Nom de l'Agent"
-          required
-        />
+      <!-- Description -->
+      <v-textarea
+        v-model="description"
+        :error-messages="errors.description"
+        density="compact"
+        label="Description"
+        rows="2"
+      />
 
-        <!-- Description -->
-        <v-textarea
-          v-model="description"
-          :error-messages="errors.description"
-          label="Description"
-          rows="3"
-        />
+      <v-row>
+        <v-col>
+          <!-- Fournisseur -->
+          <v-select
+            v-model="provider"
+            :error-messages="errors.provider"
+            :items="providers"
+            density="compact"
+            label="Fournisseur"
+          />
+        </v-col>
+        <v-col>
+          <!-- Rôle -->
+          <v-select
+            v-model="role"
+            :error-messages="errors.role"
+            :items="roles"
+            density="compact"
+            label="Rôle"
+          />
+        </v-col>
+      </v-row>
 
-        <!-- Fournisseur -->
-        <v-select
-          v-model="provider"
-          :error-messages="errors.provider"
-          :items="providers"
-          label="Fournisseur"
-        />
+      <!-- Configuration -->
+      <h3>Configuration</h3>
+      <v-text-field
+        v-if="configuration"
+        v-model="configuration.model"
+        :error-messages="errors['configuration.model']"
+        density="compact"
+        label="Modèle"
+        required
+      />
+      <v-textarea
+        v-if="configuration"
+        v-model="configuration.prompt"
+        :error-messages="errors['configuration.prompt']"
+        density="compact"
+        label="Prompt"
+        rows="5"
+      />
+      <v-checkbox
+        v-if="configuration"
+        v-model="configuration.stream"
+        density="compact"
+        label="Stream"
+      />
+      <v-text-field
+        v-if="configuration"
+        v-model="configuration.temperature"
+        :error-messages="errors['configuration.temperature']"
+        :max="1"
+        :min="0"
+        density="compact"
+        label="Température"
+      />
 
-        <!-- Rôle -->
-        <v-select v-model="role" :error-messages="errors.role" :items="roles" label="Rôle" />
-
-        <!-- Configuration -->
-        <h3>Configuration</h3>
-        <v-text-field
-          v-model="configuration.model"
-          :error-messages="errors['configuration.model']"
-          label="Modèle"
-          required
-        />
-        <v-textarea
-          v-model="configuration.prompt"
-          :error-messages="errors['configuration.prompt']"
-          label="Prompt"
-          rows="3"
-        />
-        <v-checkbox v-model="configuration.stream" label="Stream" />
-        <v-text-field
-          v-model="configuration.temperature"
-          :error-messages="errors['configuration.temperature']"
-          label="Température"
-          model-value="0.7"
-          type="number"
-        />
-
-        <!-- Boutons -->
-        <div class="d-flex justify-end mt-4">
-          <v-btn color="primary" type="submit">
-            {{ isNewAgent ? 'Créer' : 'Mettre à jour' }}
-          </v-btn>
-        </div>
-      </v-form>
-    </v-card-text>
-  </v-card>
+      <!-- Boutons -->
+      <div class="d-flex justify-end mt-4">
+        <v-btn color="primary" type="submit">
+          {{ isNewAgent ? 'Créer' : 'Mettre à jour' }}
+        </v-btn>
+      </div>
+    </v-form>
+  </v-container>
 </template>
 
 <script lang="ts" setup>
@@ -73,19 +92,33 @@ import { watch } from 'vue'
 import * as yup from 'yup'
 import { CreateAiAgentDto } from '~/types/dtos/AiAgentDto'
 import { AiAgentProvider } from '~/types/enums/AiAgentProvider'
-import { AiAgentRole } from '~/types/enums/AiAgentRole'
+import { AiAgentRole } from '~/types/enums/AiAgentRole' // Props
 
 // Props
 const props = defineProps({
   isNewAgent: Boolean,
   formData: {
-    type: Object as () => Partial<CreateAiAgentDto>,
-    required: true
+    type: [Object as () => Partial<CreateAiAgentDto>, null],
+    required: true,
+    default: null
   }
 })
 
+const defaultForm: Partial<CreateAiAgentDto> = {
+  name: '',
+  description: '',
+  provider: undefined,
+  role: undefined,
+  configuration: {
+    model: '',
+    prompt: '',
+    stream: false,
+    temperature: 0.7 // Température par défaut
+  }
+}
+
 // Événement d'émission
-const emit = defineEmits(['formSubmit', 'cancel'])
+const emit = defineEmits(['formSubmit'])
 
 // Options
 const providers = Object.values(AiAgentProvider)
@@ -112,7 +145,7 @@ const schema = yup.object({
 // Liaison Vee-Validate
 const { defineField, handleSubmit, errors, resetForm } = useForm({
   validationSchema: schema,
-  initialValues: props.formData
+  initialValues: defaultForm
 })
 
 const [name] = defineField('name')
@@ -126,16 +159,15 @@ const onSubmit = handleSubmit((values) => {
   emit('formSubmit', values)
 })
 
-// Annulation
-const cancel = () => {
-  emit('cancel')
-}
-
 // Mise à jour des données initiales
 watch(
   () => props.formData,
   () => {
-    resetForm({ values: props.formData })
+    resetForm({ values: defaultForm })
+    if (undefined !== props.formData && props.formData) {
+      console.log(props.formData)
+      resetForm({ values: props.formData })
+    }
   },
   { deep: true }
 )

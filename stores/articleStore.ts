@@ -33,8 +33,11 @@ export const useArticleStore = defineStore('article', {
       const apiBase = useRuntimeConfig().public.apiBase
       try {
         const { data } = await axios.post(`${apiBase}/articles`, articleData)
+
         this.articles.push(data)
-        return { success: true, message: 'Article créé avec succès' }
+        await this.fetchArticles()
+
+        return { success: true, message: ['Article créé avec succès'] }
       } catch (error) {
         return this.handleApiError(error, "Erreur lors de la création de l'article")
       }
@@ -45,7 +48,7 @@ export const useArticleStore = defineStore('article', {
       try {
         await axios.put(`${apiBase}/articles/${id}`, articleData)
         await this.fetchArticles()
-        return { success: true, message: 'Article mis à jour avec succès' }
+        return { success: true, message: ['Article mis à jour avec succès'] }
       } catch (error) {
         return this.handleApiError(error, 'Erreur lors de la mise à jour')
       }
@@ -56,7 +59,7 @@ export const useArticleStore = defineStore('article', {
       try {
         await axios.delete(`${apiBase}/articles/${id}`)
         this.articles = this.articles.filter((article) => article.id !== id)
-        return { success: true, message: 'Article supprimé' }
+        return { success: true, message: ['Article supprimé'] }
       } catch (error) {
         return this.handleApiError(error, 'Erreur lors de la suppression')
       }

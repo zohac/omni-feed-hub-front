@@ -16,6 +16,7 @@ export class CreateAiAgentDto {
 }
 
 export class UpdateAiAgentDto {
+  id?: number
   name?: string
   description?: string
   provider?: AiAgentProvider

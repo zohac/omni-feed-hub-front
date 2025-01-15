@@ -40,8 +40,11 @@ export const useFeedCollectionStore = defineStore('feedCollection', {
 
       try {
         const { data } = await axios.post(`${apiBase}/collections/feeds`, dto)
+
         this.feedsCollection.push(data)
-        return { success: true, message: 'Flux ajouté avec succès' }
+        await this.fetchFeedsCollection()
+
+        return { success: true, message: ['Collection de Flux ajouté avec succès'] }
       } catch (error) {
         return this.handleApiError(error, 'Erreur lors de la création de la Collection de flux')
       }
@@ -55,7 +58,7 @@ export const useFeedCollectionStore = defineStore('feedCollection', {
         await axios.put(`${apiBase}/collections/feeds/${id}`, dto)
         await this.fetchFeedsCollection()
         await this.fetchFeedCollectionById(id)
-        return { success: true, message: 'Flux mis à jour avec succès' }
+        return { success: true, message: ['Collection de Flux mis à jour avec succès'] }
       } catch (error) {
         return this.handleApiError(error, 'Erreur lors de la mise à jour de la Collection de flux')
       }
@@ -66,7 +69,7 @@ export const useFeedCollectionStore = defineStore('feedCollection', {
       try {
         await axios.delete(`${apiBase}/collections/feeds/${id}`)
         this.feedsCollection = this.feedsCollection.filter((feed) => feed.id !== id)
-        return { success: true, message: 'Flux supprimé avec succès' }
+        return { success: true, message: ['Collection de Flux supprimé avec succès'] }
       } catch (error) {
         return this.handleApiError(error, 'Erreur lors de la suppression de la Collection de flux')
       }

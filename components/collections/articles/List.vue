@@ -1,11 +1,15 @@
 <template>
   <v-row>
     <v-col>
-      <h1>Gestion des Collections de Flux RSS</h1>
+      <h1>Gestion des Collections d'Articles</h1>
     </v-col>
 
     <v-col class="d-flex justify-end align-center">
-      <v-btn color="primary" text="Ajouter une Collection de Flux Rss" @click="newFeedCollection" />
+      <v-btn
+        color="primary"
+        text="Ajouter une Collection d'articles"
+        @click="newArticleCollection"
+      />
     </v-col>
   </v-row>
 
@@ -13,10 +17,10 @@
     <v-col>
       <v-data-table
         :headers="headers"
-        :items="feedCollectionStore.feedsCollection"
+        :items="articleCollectionStore.articlesCollection"
         class="elevation-1"
         item-value="id"
-        @update:options="feedCollectionStore.fetchFeedsCollection()"
+        @update:options="articleCollectionStore.fetchArticlesCollection()"
       >
         <template v-slot:item.actions="{ item }">
           <v-btn
@@ -25,7 +29,7 @@
             color="primary"
             density="comfortable"
             icon="mdi-pencil"
-            @click="updateFeed(item)"
+            @click="updateArticle(item)"
           />
 
           <v-btn
@@ -33,7 +37,7 @@
             color="error"
             density="comfortable"
             icon="mdi-delete"
-            @click="deleteFeed(item)"
+            @click="deleteArticle(item)"
           />
         </template>
       </v-data-table>
@@ -42,9 +46,9 @@
 
   <!-- Formulaire de création -->
   <v-dialog v-model="isOpen" class="d-flex align-center justify-center" max-width="500">
-    <CollectionsFeedsForm
+    <CollectionsArticlesForm
       :form-data="form"
-      :is-new-feed-collection="isNewFeedCollection"
+      :is-new-article-collection="isNewArticleCollection"
       @form-submit="submitForm"
     />
   </v-dialog>
@@ -54,17 +58,17 @@
 </template>
 
 <script lang="ts" setup>
-// components/collections/feeds/List.vue
-import { useFeedCollectionStore } from '~/stores/feedCollectionStore'
+// components/collections/articles/List.vue
+import { useArticleCollectionStore } from '~/stores/articleCollectionStore'
 import type {
-  CreateRssFeedCollectionDto,
-  UpdateRssFeedCollectionDto
-} from '~/types/dtos/RssFeedCollectionDto'
-import type { RssFeedCollection } from '~/types/entities/RssFeedCollection'
+  CreateArticleCollectionDto,
+  UpdateArticleCollectionDto
+} from '~/types/dtos/ArticleCollectionDto'
+import type { ArticleCollection } from '~/types/entities/ArticleCollection'
 
-const feedCollectionStore = useFeedCollectionStore()
+const articleCollectionStore = useArticleCollectionStore()
 const isOpen = ref(false)
-const isNewFeedCollection = ref(false)
+const isNewArticleCollection = ref(false)
 const headers = [
   { title: 'Name', align: 'start', key: 'name' },
   { title: 'Description', align: 'start', key: 'description' },
@@ -78,19 +82,21 @@ const snackbar = ref({
   color: 'success'
 })
 
-const form = ref<CreateRssFeedCollectionDto>({
+const form = ref<CreateArticleCollectionDto>({
   name: '',
   description: ''
 })
 
 // Créer ou mettre à jour un flux
-const submitForm = async (values: CreateRssFeedCollectionDto | UpdateRssFeedCollectionDto) => {
+const submitForm = async (values: CreateArticleCollectionDto | UpdateArticleCollectionDto) => {
   let response
-  if (isNewFeedCollection.value) {
-    response = await feedCollectionStore.createFeedCollection(values as CreateRssFeedCollectionDto)
+  if (isNewArticleCollection.value) {
+    response = await articleCollectionStore.createArticleCollection(
+      values as CreateArticleCollectionDto
+    )
   } else if (isUpdateDto(values)) {
-    const { id, feeds, ...dto } = values
-    response = await feedCollectionStore.updateFeedCollection(id!, dto)
+    const { id, articles, ...dto } = values
+    response = await articleCollectionStore.updateArticleCollection(id!, dto)
   } else {
     console.error('Le DTO pour la mise à jour est invalide.')
     return
@@ -102,17 +108,17 @@ const submitForm = async (values: CreateRssFeedCollectionDto | UpdateRssFeedColl
   if (response.success) closeModal()
 }
 
-// Type guard pour vérifier si l'objet est CreateRssFeedCollectionDto
+// Type guard pour vérifier si l'objet est CreateArticleCollectionDto
 function isUpdateDto(
-  dto: CreateRssFeedCollectionDto | UpdateRssFeedCollectionDto
-): dto is UpdateRssFeedCollectionDto {
+  dto: CreateArticleCollectionDto | UpdateArticleCollectionDto
+): dto is UpdateArticleCollectionDto {
   return 'id' in dto
 }
 
 // Supprimer un flux
-const deleteFeed = async (feed: RssFeedCollection) => {
+const deleteArticle = async (article: ArticleCollection) => {
   if (confirm('Voulez-vous vraiment supprimer ce flux ?')) {
-    const response = await feedCollectionStore.deleteFeedCollection(feed.id)
+    const response = await articleCollectionStore.deleteArticleCollection(article.id)
 
     for (const message of response.message) {
       showSnackbar(message, response.success ? 'success' : 'error')
@@ -121,22 +127,24 @@ const deleteFeed = async (feed: RssFeedCollection) => {
 }
 
 // Préparer la modification (fonction à compléter)
-const updateFeed = (rssFeed: RssFeedCollection) => {
-  const feed = feedCollectionStore.feedsCollection.find((feed) => feed.id === rssFeed.id)
-  form.value = { ...feed }
+const updateArticle = (articleCollection: ArticleCollection) => {
+  const article = articleCollectionStore.articlesCollection.find(
+    (article) => article.id === articleCollection.id
+  )
+  form.value = { ...article }
   isOpen.value = true
-  isNewFeedCollection.value = false
+  isNewArticleCollection.value = false
 }
 
-const newFeedCollection = () => {
+const newArticleCollection = () => {
   form.value = {
     name: '',
     description: ''
   }
   isOpen.value = true
-  isNewFeedCollection.value = true
+  isNewArticleCollection.value = true
 
-  console.log(isNewFeedCollection.value)
+  console.log(isNewArticleCollection.value)
 }
 
 // Afficher les messages flash

@@ -62,7 +62,7 @@ const schema = yup.object({
   title: yup.string().required('Titre requis').min(3, 'Minimum 3 caractères'),
   url: yup.string().required('URL requise').url('URL invalide'),
   description: yup.string().nullable().max(200, 'Maximum 200 caractères'),
-  collectionId: yup.number().nullable().required('Collection requise')
+  collectionId: yup.number().nullable()
 })
 
 // Utilisation de VeeValidate

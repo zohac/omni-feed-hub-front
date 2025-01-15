@@ -37,8 +37,11 @@ export const useFeedStore = defineStore('feed', {
 
       try {
         const { data } = await axios.post(`${apiBase}/feeds`, dto)
+
         this.feeds.push(data)
-        return { success: true, message: 'Flux ajouté avec succès' }
+        await this.fetchFeeds()
+
+        return { success: true, message: ['Flux ajouté avec succès'] }
       } catch (error) {
         return this.handleApiError(error, 'Erreur lors de la création du flux')
       }
@@ -53,7 +56,7 @@ export const useFeedStore = defineStore('feed', {
         await axios.put(`${apiBase}/feeds/${id}`, dto)
         await this.fetchFeeds()
         await this.fetchFeedById(id)
-        return { success: true, message: 'Flux mis à jour avec succès' }
+        return { success: true, message: ['Flux mis à jour avec succès'] }
       } catch (error) {
         return this.handleApiError(error, 'Erreur lors de la mise à jour du flux')
       }
@@ -64,7 +67,7 @@ export const useFeedStore = defineStore('feed', {
       try {
         await axios.delete(`${apiBase}/feeds/${id}`)
         this.feeds = this.feeds.filter((feed) => feed.id !== id)
-        return { success: true, message: 'Flux supprimé avec succès' }
+        return { success: true, message: ['Flux supprimé avec succès'] }
       } catch (error) {
         return this.handleApiError(error, 'Erreur lors de la suppression du flux')
       }

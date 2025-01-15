@@ -48,10 +48,9 @@
       <v-list-group
         v-for="(feedCollection, i) in navigation.feedsCollectionMenu.value"
         :key="i"
-        :value="openGroups.includes('collection-' + feedCollection.title)"
-        @click:toggle="toggleGroup('collection-' + feedCollection.title)"
+        :value="`collection-${feedCollection.title}`"
       >
-        <template #activator="{ props }">
+        <template v-slot:activator="{ props }">
           <v-list-item :title="feedCollection.title" v-bind="props" />
         </template>
 
@@ -61,9 +60,8 @@
           :key="j"
           :class="{ 'my-active': activeItem === item.path }"
           :prepend-icon="item.icon"
-          active-class="none"
+          :to="item.path"
           class="mx-3 feed-item"
-          @click="navigateTo(item.path)"
         >
           <v-list-item-title>{{ item.title }}</v-list-item-title>
         </v-list-item>

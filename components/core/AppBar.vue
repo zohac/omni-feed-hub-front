@@ -70,6 +70,7 @@ const form = ref<CreateRssFeedDto>({
 const menuItems = [
   { title: 'Gérer les Feeds', to: '/feeds' },
   { title: 'Gérer les Collections de Feeds', to: '/collections/feeds' },
+  { title: "Gérer les Collections d'articles", to: '/collections/articles' },
   { title: 'Gérer les agents', to: '/agents' },
   { title: 'Paramètres', to: '/settings' }
 ]

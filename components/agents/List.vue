@@ -17,9 +17,8 @@
           :headers="headers"
           :items="agents"
           :items-per-page="10"
-          class="elevation-1"
+          class="data-table"
           item-value="id"
-          @update:options="agentStore.fetchAgents()"
         >
           <template v-slot:item.actions="{ item }">
             <v-btn
@@ -130,3 +129,10 @@ const closeSidebar = () => {
   selectedAgent.value = null
 }
 </script>
+
+<style scoped>
+.data-table {
+  border: 1px rgba(var(--v-border-color), var(--v-medium-emphasis-opacity)) solid;
+  border-radius: 4px;
+}
+</style>

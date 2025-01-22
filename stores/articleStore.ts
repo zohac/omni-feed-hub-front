@@ -1,7 +1,9 @@
 import axios, { AxiosError } from 'axios'
 import { defineStore } from 'pinia'
+import type { ArticleDto } from '~/types/dtos/ArticleDto'
 import type { ApiErrorMessage } from '~/types/entities/ApiErrorMessage'
 import type { Article } from '~/types/entities/Article'
+import type { ISnackMessage } from '~/types/interfaces/ISnackMessage'
 
 export const useArticleStore = defineStore('article', {
   state: () => ({
@@ -29,7 +31,7 @@ export const useArticleStore = defineStore('article', {
       }
     },
 
-    async createArticle(articleData: Partial<Article>) {
+    async createArticle(articleData: Partial<Article>): Promise<ISnackMessage> {
       const apiBase = useRuntimeConfig().public.apiBase
       try {
         const { data } = await axios.post(`${apiBase}/articles`, articleData)
@@ -43,7 +45,7 @@ export const useArticleStore = defineStore('article', {
       }
     },
 
-    async updateArticle(id: number, articleData: Partial<Article>) {
+    async updateArticle(id: number, articleData: ArticleDto): Promise<ISnackMessage> {
       const apiBase = useRuntimeConfig().public.apiBase
       try {
         await axios.put(`${apiBase}/articles/${id}`, articleData)
@@ -54,7 +56,7 @@ export const useArticleStore = defineStore('article', {
       }
     },
 
-    async deleteArticle(id: number) {
+    async deleteArticle(id: number): Promise<ISnackMessage> {
       const apiBase = useRuntimeConfig().public.apiBase
       try {
         await axios.delete(`${apiBase}/articles/${id}`)
@@ -65,7 +67,7 @@ export const useArticleStore = defineStore('article', {
       }
     },
 
-    handleApiError(error: unknown, defaultMessage: string) {
+    handleApiError(error: unknown, defaultMessage: string): ISnackMessage {
       if (axios.isAxiosError(error)) {
         const axiosError = error as AxiosError
         const data = axiosError.response?.data as ApiErrorMessage
@@ -74,7 +76,7 @@ export const useArticleStore = defineStore('article', {
         return { success: false, message }
       } else {
         console.error(defaultMessage, error)
-        return { success: false, message: defaultMessage }
+        return { success: false, message: [defaultMessage] }
       }
     }
   }

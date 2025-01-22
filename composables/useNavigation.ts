@@ -57,7 +57,7 @@ export const useNavigation = () => {
 
   return {
     home: [
-      { title: 'Dashboard', path: '/', icon: 'mdi-home' },
+      { title: 'Dashboard', path: '/', icon: 'mdi-home-outline' },
       {
         title: 'All Articles',
         path: '/articles',

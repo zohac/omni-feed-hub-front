@@ -1,9 +1,11 @@
 import axios, { AxiosError } from 'axios'
 import { defineStore } from 'pinia'
-import { prepareCreateDto, prepareUpdateDto } from '~/services/rssFeedService'
 import type { CreateRssFeedDto, UpdateRssFeedDto } from '~/types/dtos/RssFeedDto'
+import type { RssFeedInfosDto } from '~/types/dtos/RssFeedInfosDto'
 import type { ApiErrorMessage } from '~/types/entities/ApiErrorMessage'
 import { RssFeed } from '~/types/entities/RssFeed'
+import type { RssFeedInfos } from '~/types/entities/RssFeedInfos'
+import type { ISnackMessage } from '~/types/interfaces/ISnackMessage'
 
 export const useFeedStore = defineStore('feed', {
   state: () => ({
@@ -11,7 +13,7 @@ export const useFeedStore = defineStore('feed', {
     feed: null as RssFeed | null
   }),
   actions: {
-    async fetchFeeds() {
+    async fetchFeeds(): Promise<void> {
       const apiBase = useRuntimeConfig().public.apiBase
       try {
         const { data } = await axios.get(`${apiBase}/feeds`)
@@ -21,7 +23,7 @@ export const useFeedStore = defineStore('feed', {
       }
     },
 
-    async fetchFeedById(id: number) {
+    async fetchFeedById(id: number): Promise<void> {
       const apiBase = useRuntimeConfig().public.apiBase
       try {
         const { data } = await axios.get(`${apiBase}/feeds/${id}`)
@@ -31,9 +33,8 @@ export const useFeedStore = defineStore('feed', {
       }
     },
 
-    async createFeed(feedData: CreateRssFeedDto) {
+    async createFeed(dto: CreateRssFeedDto): Promise<ISnackMessage> {
       const apiBase = useRuntimeConfig().public.apiBase
-      const dto = prepareCreateDto(feedData)
 
       try {
         const { data } = await axios.post(`${apiBase}/feeds`, dto)
@@ -47,10 +48,8 @@ export const useFeedStore = defineStore('feed', {
       }
     },
 
-    async updateFeed(id: number, updatedData: UpdateRssFeedDto) {
+    async updateFeed(id: number, dto: UpdateRssFeedDto): Promise<ISnackMessage> {
       const apiBase = useRuntimeConfig().public.apiBase
-      console.log(updatedData)
-      const dto = prepareUpdateDto(updatedData)
 
       try {
         await axios.put(`${apiBase}/feeds/${id}`, dto)
@@ -62,7 +61,7 @@ export const useFeedStore = defineStore('feed', {
       }
     },
 
-    async deleteFeed(id: number) {
+    async deleteFeed(id: number): Promise<ISnackMessage> {
       const apiBase = useRuntimeConfig().public.apiBase
       try {
         await axios.delete(`${apiBase}/feeds/${id}`)
@@ -73,8 +72,20 @@ export const useFeedStore = defineStore('feed', {
       }
     },
 
+    async getFeedInfos(dto: RssFeedInfosDto): Promise<RssFeedInfos | ISnackMessage> {
+      const apiBase = useRuntimeConfig().public.apiBase
+
+      try {
+        const { data } = await axios.post(`${apiBase}/feeds/infos`, dto)
+
+        return data as RssFeedInfos
+      } catch (error) {
+        return this.handleApiError(error, 'Erreur lors de la création du flux')
+      }
+    },
+
     // Gestion des erreurs API
-    handleApiError(error: unknown, defaultMessage: string) {
+    handleApiError(error: unknown, defaultMessage: string): ISnackMessage {
       if (axios.isAxiosError(error)) {
         const axiosError = error as AxiosError
         const data = axiosError.response?.data as ApiErrorMessage
@@ -83,7 +94,7 @@ export const useFeedStore = defineStore('feed', {
         return { success: false, message }
       } else {
         // console.error(defaultMessage, error)
-        return { success: false, message: defaultMessage }
+        return { success: false, message: [defaultMessage] }
       }
     }
   }

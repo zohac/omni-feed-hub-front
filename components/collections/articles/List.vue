@@ -18,9 +18,8 @@
       <v-data-table
         :headers="headers"
         :items="articleCollectionStore.articlesCollection"
-        class="elevation-1"
+        class="data-table"
         item-value="id"
-        @update:options="articleCollectionStore.fetchArticlesCollection()"
       >
         <template v-slot:item.actions="{ item }">
           <v-btn
@@ -160,3 +159,10 @@ const closeModal = () => {
   form.value = { name: '', description: '' }
 }
 </script>
+
+<style scoped>
+.data-table {
+  border: 1px rgba(var(--v-border-color), var(--v-medium-emphasis-opacity)) solid;
+  border-radius: 4px;
+}
+</style>

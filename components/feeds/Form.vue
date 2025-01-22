@@ -1,36 +1,26 @@
 <template>
-  <v-card class="mx-auto" width="400">
-    <template v-slot:title>
-      <span class="font-weight-black">
-        {{ isNewFeed ? 'Ajouter un nouveau flux' : 'Modifier le flux' }}
-      </span>
-    </template>
+  <v-container>
+    <v-form @submit.prevent="onSubmit">
+      <v-text-field v-model="title" :error-messages="errors.title" label="Title" />
+      <v-text-field v-model="url" :error-messages="errors.url" label="URL" />
+      <v-text-field
+        v-model="description"
+        :error-messages="errors.description"
+        label="Description"
+      />
 
-    <v-card-text>
-      <v-form @submit.prevent="onSubmit">
-        <v-text-field v-model="title" :error-messages="errors.title" label="Title" />
-        <v-text-field v-model="url" :error-messages="errors.url" label="URL" />
-        <v-text-field
-          v-model="description"
-          :error-messages="errors.description"
-          label="Description"
-        />
+      <v-select
+        v-model="collectionId"
+        :error-messages="errors.collectionId"
+        :items="collections"
+        item-title="name"
+        item-value="id"
+        label="Collection"
+      />
 
-        <v-select
-          v-model="collectionId"
-          :error-messages="errors.collectionId"
-          :items="collections"
-          item-title="name"
-          item-value="id"
-          label="Collection"
-        />
-
-        <v-btn color="primary" type="submit" variant="flat">
-          {{ isNewFeed ? 'Créer' : 'Mettre à jour' }}
-        </v-btn>
-      </v-form>
-    </v-card-text>
-  </v-card>
+      <v-btn color="primary" type="submit" variant="flat"> Mettre à jour</v-btn>
+    </v-form>
+  </v-container>
 </template>
 
 <script lang="ts" setup>
@@ -41,7 +31,6 @@ import { RssFeedCollection } from '~/types/entities/RssFeedCollection' // Défin
 
 // Définition des props
 const props = defineProps({
-  isNewFeed: Boolean,
   formData: {
     type: Object,
     required: true

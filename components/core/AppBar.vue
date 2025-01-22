@@ -12,7 +12,7 @@
     <v-row>
       <v-col>
         <!-- Bouton central pour ajouter un flux RSS -->
-        <v-btn class="mx-auto" flat prepend-icon="mdi-rss" variant="outlined" @click="newFeed">
+        <v-btn class="mx-auto" flat prepend-icon="mdi-rss" tag="a" to="/feeds" variant="outlined">
           <template v-slot:prepend>
             <v-icon></v-icon>
           </template>

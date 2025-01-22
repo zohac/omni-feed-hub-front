@@ -92,7 +92,7 @@ import { watch } from 'vue'
 import * as yup from 'yup'
 import { CreateAiAgentDto } from '~/types/dtos/AiAgentDto'
 import { AiAgentProvider } from '~/types/enums/AiAgentProvider'
-import { AiAgentRole } from '~/types/enums/AiAgentRole' // Props
+import { AiAgentRole } from '~/types/enums/AiAgentRole'
 
 // Props
 const props = defineProps({

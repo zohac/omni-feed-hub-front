@@ -17,9 +17,8 @@
           :headers="headers"
           :items="actions"
           :items-per-page="10"
-          class="elevation-1"
+          class="data-table"
           item-value="id"
-          @update:options="actionStore.fetchActions()"
         >
           <template v-slot:item.actions="{ item }">
             <v-btn
@@ -173,3 +172,10 @@ const closeModal = () => {
   form.value = {}
 }
 </script>
+
+<style scoped>
+.data-table {
+  border: 1px rgba(var(--v-border-color), var(--v-medium-emphasis-opacity)) solid;
+  border-radius: 4px;
+}
+</style>

@@ -14,9 +14,8 @@
       <v-data-table
         :headers="headers"
         :items="feedCollectionStore.feedsCollection"
-        class="elevation-1"
+        class="data-table"
         item-value="id"
-        @update:options="feedCollectionStore.fetchFeedsCollection()"
       >
         <template v-slot:item.actions="{ item }">
           <v-btn
@@ -135,8 +134,6 @@ const newFeedCollection = () => {
   }
   isOpen.value = true
   isNewFeedCollection.value = true
-
-  console.log(isNewFeedCollection.value)
 }
 
 // Afficher les messages flash
@@ -152,3 +149,10 @@ const closeModal = () => {
   form.value = { name: '', description: '' }
 }
 </script>
+
+<style scoped>
+.data-table {
+  border: 1px rgba(var(--v-border-color), var(--v-medium-emphasis-opacity)) solid;
+  border-radius: 4px;
+}
+</style>

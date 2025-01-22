@@ -16,57 +16,61 @@
       </v-list-item>
     </v-list>
 
-    <v-divider />
+    <div v-if="navigation.feedsMenu.value.length > 0">
+      <v-divider />
 
-    <!-- Groupe "Tous mes Flux RSS" -->
-    <v-list density="compact">
-      <v-list-group
-        :value="openGroups.includes('allFeeds')"
-        @click:toggle="toggleGroup('allFeeds')"
-      >
-        <template #activator="{ props }">
-          <v-list-item title="Tous mes Flux RSS" v-bind="props" />
-        </template>
+      <!-- Groupe "Tous mes Flux RSS" -->
+      <v-list density="compact">
+        <v-list-group
+          :value="openGroups.includes('allFeeds')"
+          @click:toggle="toggleGroup('allFeeds')"
+        >
+          <template #activator="{ props }">
+            <v-list-item title="Tous mes Flux RSS" v-bind="props" />
+          </template>
 
-        <v-list-item
-          v-for="(item, i) in navigation.feedsMenu.value"
+          <v-list-item
+            v-for="(item, i) in navigation.feedsMenu.value"
+            :key="i"
+            :class="{ 'my-active': activeItem === item.path }"
+            :prepend-icon="item.icon"
+            active-class="none"
+            @click="navigateTo(item.path)"
+          >
+            <v-list-item-title>{{ item.title }}</v-list-item-title>
+          </v-list-item>
+        </v-list-group>
+      </v-list>
+    </div>
+
+    <div>
+      <v-divider />
+
+      <!-- Gestion des collections -->
+      <v-list density="compact">
+        <v-list-group
+          v-for="(feedCollection, i) in navigation.feedsCollectionMenu.value"
           :key="i"
-          :class="{ 'my-active': activeItem === item.path }"
-          :prepend-icon="item.icon"
-          active-class="none"
-          @click="navigateTo(item.path)"
+          :value="`collection-${feedCollection.title}`"
         >
-          <v-list-item-title>{{ item.title }}</v-list-item-title>
-        </v-list-item>
-      </v-list-group>
-    </v-list>
+          <template v-slot:activator="{ props }">
+            <v-list-item :title="feedCollection.title" v-bind="props" />
+          </template>
 
-    <v-divider />
-
-    <!-- Gestion des collections -->
-    <v-list density="compact">
-      <v-list-group
-        v-for="(feedCollection, i) in navigation.feedsCollectionMenu.value"
-        :key="i"
-        :value="`collection-${feedCollection.title}`"
-      >
-        <template v-slot:activator="{ props }">
-          <v-list-item :title="feedCollection.title" v-bind="props" />
-        </template>
-
-        <v-list-item
-          v-for="(item, j) in feedCollection.subMenus"
-          :id="item.title + '-j' + j"
-          :key="j"
-          :class="{ 'my-active': activeItem === item.path }"
-          :prepend-icon="item.icon"
-          :to="item.path"
-          class="mx-3 feed-item"
-        >
-          <v-list-item-title>{{ item.title }}</v-list-item-title>
-        </v-list-item>
-      </v-list-group>
-    </v-list>
+          <v-list-item
+            v-for="(item, j) in feedCollection.subMenus"
+            :id="item.title + '-j' + j"
+            :key="j"
+            :class="{ 'my-active': activeItem === item.path }"
+            :prepend-icon="item.icon"
+            :to="item.path"
+            class="mx-3 feed-item"
+          >
+            <v-list-item-title>{{ item.title }}</v-list-item-title>
+          </v-list-item>
+        </v-list-group>
+      </v-list>
+    </div>
   </v-navigation-drawer>
 </template>
 

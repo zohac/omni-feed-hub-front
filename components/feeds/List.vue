@@ -119,7 +119,6 @@
 <script lang="ts" setup>
 // components/feeds/List.vue
 
-// components/feeds/List.vue
 import { RssFeedService } from '~/services/rssFeedService'
 import { useFeedStore } from '~/stores/feedStore'
 import type { UpdateRssFeedDto } from '~/types/dtos/RssFeedDto'

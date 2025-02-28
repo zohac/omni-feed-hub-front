@@ -1,6 +1,5 @@
 // services/rssFeedService.ts
 
-import Parser from 'rss-parser'
 import { useFeedStore } from '~/stores/feedStore'
 import type { CreateRssFeedDto, UpdateRssFeedDto } from '~/types/dtos/RssFeedDto'
 import type { RssFeed } from '~/types/entities/RssFeed'
@@ -10,8 +9,6 @@ import type { ISnackMessage } from '~/types/interfaces/ISnackMessage'
 type FeedStore = ReturnType<typeof useFeedStore>
 
 export class RssFeedService {
-  private readonly parser = new Parser()
-
   constructor(private readonly feedStore: FeedStore) {}
 
   async parseURL(url: string): Promise<RssFeedInfos | null> {
@@ -31,10 +28,15 @@ export class RssFeedService {
   async createFeed(url: string, rssFeedInfos: RssFeedInfos): Promise<ISnackMessage> {
     const dto: CreateRssFeedDto = {
       title: rssFeedInfos.title ?? '',
-      url: url,
-      description: rssFeedInfos.description
+      url: url
     }
 
+    if (undefined !== rssFeedInfos?.description) {
+      if (null !== rssFeedInfos.description && 0 > rssFeedInfos.description.length) {
+        dto.description = rssFeedInfos.description
+      }
+    }
+    console.log(dto, rssFeedInfos)
     return await this.feedStore.createFeed(dto)
   }
 

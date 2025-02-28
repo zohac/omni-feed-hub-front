@@ -142,8 +142,6 @@ const newArticleCollection = () => {
   }
   isOpen.value = true
   isNewArticleCollection.value = true
-
-  console.log(isNewArticleCollection.value)
 }
 
 // Afficher les messages flash

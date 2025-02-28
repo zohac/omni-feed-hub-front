@@ -1,6 +1,15 @@
 <template>
-  <v-snackbar v-model="show" :color="color" :timeout="timeout" location="top">
+  <v-snackbar
+    v-model="show"
+    :color="color"
+    :timeout="timeout"
+    location="right"
+    style="z-index: 1000000"
+  >
     {{ message }}
+    <template v-slot:actions>
+      <v-btn icon="mdi-close" variant="text" @click="show = !show" />
+    </template>
   </v-snackbar>
 </template>
 
@@ -14,7 +23,7 @@ const props = defineProps({
   },
   timeout: {
     type: Number,
-    default: 3000
+    default: 5000
   }
 })
 

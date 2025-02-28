@@ -16,7 +16,7 @@ export class Article {
     public link?: string,
     public description?: string,
     public content?: string,
-    public tags?: { id: string; label: string }[],
+    public tags?: string[],
     public mediaAttachments?: MediaAttachment[],
     public metadata?: Record<string, string>
   ) {}

@@ -105,7 +105,6 @@ const updateAction = (action: Action) => {
     collectionId: action.parameters?.collection?.id || null
   }
 
-  console.log('form.type après initialisation :', form.value.type)
   isOpen.value = true
   isNewAction.value = false
 }

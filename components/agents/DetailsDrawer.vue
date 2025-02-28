@@ -136,7 +136,6 @@ watch(
 watch(
   () => props.agent,
   (agent) => {
-    console.log(agent)
     newAgent()
     if (agent) updateAgent(agent)
   }

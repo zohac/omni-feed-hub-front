@@ -8,7 +8,7 @@
         max-width="300px"
         width="300px"
       ></v-img>
-      <div>
+      <div class="w-100">
         <v-card-title
           class="cursor-pointer text-primary wrap-title"
           @click="openArticle(article.id)"
@@ -16,6 +16,11 @@
         </v-card-title>
         <v-card-subtitle>
           {{ formatDate(article.publicationAt) }}{{ ' - ' + article.feed?.title }}
+          <v-chip-group>
+            <v-chip v-for="tag in article.tags" color="primary" size="small" variant="outlined">
+              {{ tag }}
+            </v-chip>
+          </v-chip-group>
         </v-card-subtitle>
         <v-card-text :class="{ 'text-grey-darken-1': article.state.isRead }">
           {{ article.description }}

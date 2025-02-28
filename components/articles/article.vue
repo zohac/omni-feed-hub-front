@@ -45,14 +45,14 @@
     <v-container>
       <h2 class="text-h4">{{ article.title }}</h2>
       <p class="text-subtitle-1 grey--text">Publié le {{ formatDate(article.publicationAt) }}</p>
-
+      <v-chip-group>
+        <v-chip v-for="tag in article.tags" color="primary" size="small" variant="outlined">
+          {{ tag }}
+        </v-chip>
+      </v-chip-group>
       <v-divider class="my-4"></v-divider>
 
       <div class="article-content" v-html="article.content"></div>
-
-      <v-chip v-for="tag in article.tags" :key="tag.id" class="ma-1" color="primary">
-        {{ tag.label }}
-      </v-chip>
 
       <v-divider class="my-4"></v-divider>
 

@@ -19,10 +19,21 @@
           variant="outlined"
         ></v-select>
       </v-col>
+
+      <v-col cols="12" md="4">
+        <v-select
+          v-model="selectedTag"
+          :items="availableTags"
+          clearable
+          dense
+          label="Filtrer par tag"
+          variant="outlined"
+        ></v-select>
+      </v-col>
     </v-row>
 
     <transition-group name="fade" tag="div">
-      <v-row v-for="article in sortedArticles" v-if="articleStore.articles" :key="article.id">
+      <v-row v-for="article in filteredArticles" v-if="articleStore.articles" :key="article.id">
         <v-col>
           <ArticlesCard :article="article" @open-article="openArticleDetails" />
         </v-col>
@@ -53,7 +64,7 @@
 <script lang="ts" setup>
 import { ArticleService } from '~/services/ArticleService'
 import { useArticleStore } from '~/stores/articleStore'
-import { Article } from '~/types/entities/Article'
+import type { Article } from '~/types/entities/Article'
 
 const articleStore = useArticleStore()
 const articleService = new ArticleService(articleStore)
@@ -75,6 +86,19 @@ const sortedArticles = computed(() => {
     const dateB = new Date(b.publicationAt).getTime()
 
     return sortOrder.value === 'asc' ? dateA - dateB : dateB - dateA
+  })
+})
+
+const selectedTag = ref<string | null>(null) // Tag sélectionné pour filtrer
+const availableTags = computed(() => {
+  return Array.from(
+    new Set(articleStore.articles?.flatMap((article: Article) => article.tags ?? []) ?? [])
+  )
+})
+
+const filteredArticles = computed(() => {
+  return sortedArticles.value.filter((article) => {
+    return selectedTag.value ? article.tags?.includes(selectedTag.value) : true
   })
 })
 

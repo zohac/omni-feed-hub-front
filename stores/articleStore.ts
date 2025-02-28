@@ -60,7 +60,7 @@ export const useArticleStore = defineStore('article', {
       const apiBase = useRuntimeConfig().public.apiBase
       try {
         await axios.delete(`${apiBase}/articles/${id}`)
-        this.articles = this.articles.filter((article) => article.id !== id)
+        this.articles = this.articles.filter((article: Article) => article.id !== id)
         return { success: true, message: ['Article supprimé'] }
       } catch (error) {
         return this.handleApiError(error, 'Erreur lors de la suppression')

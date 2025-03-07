@@ -1,6 +1,6 @@
 <template>
   <v-card class="mx-auto" width="600">
-    <template v-slot:title>
+    <template #title>
       <h2>{{ isNewAction ? 'Créer une Nouvelle Action' : "Modifier l'Action" }}</h2>
     </template>
 
@@ -16,7 +16,7 @@
           item-title="text"
           item-value="value"
           label="Type d'Action"
-          @update:modelValue="onTypeChange"
+          @update:model-value="onTypeChange"
         />
 
         <!-- Champs spécifiques au type -->

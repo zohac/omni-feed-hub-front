@@ -7,7 +7,7 @@
       variant="outlined"
       with-background
     >
-      <template v-slot:prepend>
+      <template #prepend>
         <v-avatar color="blue-darken-2">
           <v-icon :icon="icon"></v-icon>
         </v-avatar>

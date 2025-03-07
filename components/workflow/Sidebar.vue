@@ -17,8 +17,8 @@
 </template>
 
 <script setup>
-import useDragAndDrop from '~/composables/useDnD'
 import { Position } from '@vue-flow/core'
+import useDragAndDrop from '~/composables/useDnD'
 
 const { onDragStart } = useDragAndDrop()
 

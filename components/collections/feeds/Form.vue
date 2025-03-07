@@ -1,6 +1,6 @@
 <template>
   <v-card class="mx-auto" width="400">
-    <template v-slot:title>
+    <template #title>
       <span class="font-weight-black">
         {{
           isNewFeedCollection ? 'Ajouter une nouvelle Collection de flux' : 'Modifier la Collection'

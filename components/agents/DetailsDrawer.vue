@@ -4,7 +4,7 @@
     location="right"
     temporary
     width="900"
-    @update:modelValue="updateIsOpen"
+    @update:model-value="updateIsOpen"
   >
     <div>
       <v-container>

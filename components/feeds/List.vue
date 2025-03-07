@@ -50,7 +50,7 @@
   <v-row>
     <v-col>
       <v-data-table :headers="headers" :items="feedStore.feeds" class="data-table" item-value="id">
-        <template v-slot:item.actions="{ item }">
+        <template #item.actions="{ item }">
           <v-btn
             v-tooltip:top="'Modifier'"
             class="me-2"

@@ -7,7 +7,7 @@
     style="z-index: 1000000"
   >
     {{ message }}
-    <template v-slot:actions>
+    <template #actions>
       <v-btn icon="mdi-close" variant="text" @click="show = !show" />
     </template>
   </v-snackbar>

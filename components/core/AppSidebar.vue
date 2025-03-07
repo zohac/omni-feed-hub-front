@@ -53,7 +53,7 @@
           :key="i"
           :value="`collection-${feedCollection.title}`"
         >
-          <template v-slot:activator="{ props }">
+          <template #activator="{ props }">
             <v-list-item :title="feedCollection.title" v-bind="props" />
           </template>
 

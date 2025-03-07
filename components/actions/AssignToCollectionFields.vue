@@ -7,7 +7,7 @@
       item-value="id"
       label="Sélectionnez une Collection"
       required
-      @update:modelValue="onUpdateModelValue"
+      @update:model-value="onUpdateModelValue"
     />
   </div>
 </template>

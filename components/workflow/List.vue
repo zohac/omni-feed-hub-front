@@ -19,7 +19,7 @@
         class="data-table"
         item-value="id"
       >
-        <template v-slot:item.actions="{ item }">
+        <template #item.actions="{ item }">
           <v-btn
             v-tooltip:top="'Modifier'"
             class="me-2"

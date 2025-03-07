@@ -28,11 +28,11 @@ export class RssFeedService {
   async createFeed(url: string, rssFeedInfos: RssFeedInfos): Promise<ISnackMessage> {
     const dto: CreateRssFeedDto = {
       title: rssFeedInfos.title ?? '',
-      url: url
+      url
     }
 
     if (undefined !== rssFeedInfos?.description) {
-      if (null !== rssFeedInfos.description && 0 > rssFeedInfos.description.length) {
+      if (rssFeedInfos.description !== null && rssFeedInfos.description.length < 0) {
         dto.description = rssFeedInfos.description
       }
     }

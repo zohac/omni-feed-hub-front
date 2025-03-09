@@ -1,3 +1,4 @@
+<!-- components/core/AppSidebar.vue -->
 <template>
   <v-navigation-drawer v-model="isSidebarOpen" :permanent="!isMobile" :temporary="isMobile" app>
     <!-- Menu statique -->
@@ -37,7 +38,17 @@
             active-class="none"
             @click="navigateTo(item.path)"
           >
-            <v-list-item-title>{{ item.title }}</v-list-item-title>
+            <v-list-item-title class="d-flex justify-space-between">
+              <span>{{ item.title }}</span>
+              <v-chip
+                v-if="item.unreadCount && item.unreadCount > 0"
+                color="primary"
+                size="x-small"
+                variant="outlined"
+              >
+                {{ item.unreadCount }}
+              </v-chip>
+            </v-list-item-title>
           </v-list-item>
         </v-list-group>
       </v-list>
@@ -67,6 +78,9 @@
             class="mx-3 feed-item"
           >
             <v-list-item-title>{{ item.title }}</v-list-item-title>
+            <v-chip v-if="item.unreadCount && item.unreadCount > 0" color="red" small
+              >{{ item.unreadCount }}
+            </v-chip>
           </v-list-item>
         </v-list-group>
       </v-list>
@@ -80,13 +94,16 @@ import { onBeforeUnmount, onMounted, ref } from 'vue'
 import { useNavigation } from '~/composables/useNavigation'
 import { useSidebar } from '~/composables/useSidebar'
 import { useFeedCollectionStore } from '~/stores/feedCollectionStore'
-import { useFeedStore } from '~/stores/feedStore' /* Chargement des données */
+import { useFeedStore } from '~/stores/feedStore'
+import { useStatsStore } from '~/stores/statsStore' /* Chargement des données */
 
 /* Chargement des données */
 const feedStore = useFeedStore()
 await feedStore.fetchFeeds()
 const feedCollectionStore = useFeedCollectionStore()
 await feedCollectionStore.fetchFeedsCollection()
+const statsStore = useStatsStore()
+await statsStore.fetchStats()
 
 /* Récupération de la navigation */
 const navigation = useNavigation()

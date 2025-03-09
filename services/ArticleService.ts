@@ -8,10 +8,23 @@ type ArticleStore = ReturnType<typeof useArticleStore>
 export class ArticleService {
   constructor(private readonly articleStore: ArticleStore) {}
 
-  async getAll(): Promise<Article[]> {
-    await this.articleStore.fetchArticles()
+  async getAll(params?: {
+    tag?: string
+    limit?: number
+    sortPublicationAt?: 'ASC' | 'DESC'
+    page?: number
+  }): Promise<{
+    articles: Article[]
+    total: number
+    totalPages: number
+  }> {
+    await this.articleStore.fetchArticles(params)
 
-    return this.articleStore.articles
+    return {
+      articles: this.articleStore.articles,
+      total: this.articleStore.total,
+      totalPages: this.articleStore.totalPages
+    }
   }
 
   async getArticleById(id: number): Promise<Article | null> {

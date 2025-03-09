@@ -15,7 +15,11 @@
           >{{ article.title }}
         </v-card-title>
         <v-card-subtitle>
-          {{ formatDate(article.publicationAt) }}{{ ' - ' + article.feed?.title }}
+          {{ formatDate(article.publicationAt) }}
+          <span v-if="article.feed">
+            -
+            <a :href="/feeds/ + article.feed.id">{{ article.feed.title }}</a></span
+          >
           <v-chip-group>
             <v-chip v-for="tag in article.tags" color="primary" size="small" variant="outlined">
               {{ tag }}

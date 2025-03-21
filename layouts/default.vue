@@ -1,5 +1,5 @@
 <template>
-  <v-layout>
+  <v-layout class="bg-background">
     <CoreAppBar />
     <CoreAppSidebar />
     <CoreView />

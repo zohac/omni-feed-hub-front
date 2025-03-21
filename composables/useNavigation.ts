@@ -24,6 +24,7 @@ export const useNavigation = () => {
   const feedStore = useFeedStore()
   const { feeds } = storeToRefs(feedStore) // Réactivité des feeds
   const feedsMenu = ref<ItemMenu[]>([])
+  const totalUnreadCount = ref<number>(0)
 
   const feedCollectionStore = useFeedCollectionStore()
   const { feedsCollection } = storeToRefs(feedCollectionStore)
@@ -45,6 +46,10 @@ export const useNavigation = () => {
             unreadCount: feedStats ? feedStats.unreadArticles : 0
           }
         })
+        totalUnreadCount.value = feedsMenu.value.reduce(
+          (sum, feed) => sum + (feed.unreadCount || 0),
+          0
+        )
       }
     },
     { immediate: true }
@@ -77,11 +82,12 @@ export const useNavigation = () => {
       {
         title: 'All Articles',
         path: '/articles',
-        icon: 'mdi-post-outline'
+        icon: 'mdi-newspaper-variant-outline'
       },
       { title: 'All Posts', path: '/posts', icon: 'mdi-post-outline' }
     ],
     feedsMenu,
-    feedsCollectionMenu
+    feedsCollectionMenu,
+    totalUnreadCount
   }
 }

@@ -52,7 +52,7 @@
       </v-chip-group>
       <v-divider class="my-4"></v-divider>
 
-      <div class="article-content" v-html="article.content"></div>
+      <div class="article-content" v-html="renderMarkdown(article.content)"></div>
 
       <v-divider class="my-4"></v-divider>
 
@@ -74,6 +74,7 @@
 <script lang="ts" setup>
 import { useArticleStore } from '~/stores/articleStore'
 import { Article } from '~/types/entities/Article'
+import { markedWithImageClass } from '~/utils/markedPlugin'
 
 const articleStore = useArticleStore()
 
@@ -118,4 +119,20 @@ const updateArticleState = async (article: Article) => {
 
   emit('article-updated', article)
 }
+
+// Fonction pour convertir le Markdown en HTML avec le plugin marked
+const renderMarkdown = (markdown: string) => {
+  return markedWithImageClass(markdown)
+}
 </script>
+
+<style>
+.article-content {
+  white-space: pre-wrap;
+}
+
+.article-content .article-image {
+  max-width: 100% !important;
+  height: auto !important;
+}
+</style>

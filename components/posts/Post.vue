@@ -22,7 +22,13 @@
       <p class="text-subtitle-1 grey--text">Scheduled At: {{ formatDate(post.scheduledAt) }}</p>
       <p class="text-subtitle-1 grey--text">Published At: {{ formatDate(post.publishedAt) }}</p>
       <v-chip-group>
-        <v-chip v-for="article in post.articles" color="primary" size="small" variant="outlined">
+        <v-chip
+          v-for="article in post.articles"
+          color="primary"
+          size="small"
+          variant="outlined"
+          @click="navigateToArticle(article.id)"
+        >
           {{ article.title }}
         </v-chip>
       </v-chip-group>
@@ -34,9 +40,11 @@
 </template>
 
 <script lang="ts" setup>
+import { useRouter } from '#app'
 import { usePostStore } from '~/stores/postStore'
 import { Post } from '~/types/entities/Post'
 
+const router = useRouter()
 const postStore = usePostStore()
 
 const props = defineProps({
@@ -71,6 +79,11 @@ const updatePostState = async (post: Post) => {
 const formatDate = (date: string | null) => {
   if (!date) return 'N/A'
   return new Date(date).toLocaleString()
+}
+
+// Naviguer vers la page de l'article
+const navigateToArticle = (articleId: number) => {
+  router.push(`/articles/${articleId}`)
 }
 </script>
 

@@ -1,5 +1,5 @@
 <template>
-  <v-main class="bg-grey-lighten-5" min-height="100vh">
+  <v-main class="bg-surface" min-height="100vh">
     <NuxtPage />
 
     <!-- Snackbar pour les Messages Flash -->

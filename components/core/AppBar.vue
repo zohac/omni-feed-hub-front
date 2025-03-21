@@ -1,10 +1,7 @@
 <template>
-  <v-app-bar :elevation="2" color="primary" dark prominent>
+  <v-app-bar :elevation="2" prominent>
     <template #prepend>
-      <v-app-bar-nav-icon
-        icon="mdi-page-layout-sidebar-left"
-        @click="toggleSidebar"
-      ></v-app-bar-nav-icon>
+      <v-app-bar-nav-icon icon="mdi-menu" @click="toggleSidebar"></v-app-bar-nav-icon>
     </template>
 
     <v-app-bar-title>Omni Feed Hub</v-app-bar-title>

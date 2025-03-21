@@ -27,7 +27,19 @@
           @click:toggle="toggleGroup('allFeeds')"
         >
           <template #activator="{ props }">
-            <v-list-item title="Tous mes Flux RSS" v-bind="props" />
+            <v-list-item v-bind="props">
+              <div class="d-flex justify-space-between">
+                <span>Tous mes Flux</span>
+                <v-chip
+                  v-if="navigation.totalUnreadCount.value > 0"
+                  color="primary"
+                  size="x-small"
+                  variant="outlined"
+                >
+                  {{ navigation.totalUnreadCount }}
+                </v-chip>
+              </div>
+            </v-list-item>
           </template>
 
           <v-list-item
@@ -39,7 +51,7 @@
             @click="navigateTo(item.path)"
           >
             <v-list-item-title class="d-flex justify-space-between">
-              <span>{{ item.title }}</span>
+              <span>{{ truncateText(item.title, 15) }}</span>
               <v-chip
                 v-if="item.unreadCount && item.unreadCount > 0"
                 color="primary"
@@ -89,15 +101,16 @@
 </template>
 
 <script lang="ts" setup>
-import { useRouter } from '#app' // Nuxt 3 : pour la navigation programmatique
+import { useRouter } from '#app'
 import { onBeforeUnmount, onMounted, ref } from 'vue'
 import { useNavigation } from '~/composables/useNavigation'
 import { useSidebar } from '~/composables/useSidebar'
+import { useTruncate } from '~/composables/useTruncate'
 import { useFeedCollectionStore } from '~/stores/feedCollectionStore'
 import { useFeedStore } from '~/stores/feedStore'
-import { useStatsStore } from '~/stores/statsStore' /* Chargement des données */
+import { useStatsStore } from '~/stores/statsStore'
 
-/* Chargement des données */
+const { truncateText } = useTruncate()
 const feedStore = useFeedStore()
 await feedStore.fetchFeeds()
 const feedCollectionStore = useFeedCollectionStore()

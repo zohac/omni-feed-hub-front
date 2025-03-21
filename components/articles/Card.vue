@@ -1,13 +1,15 @@
 <template>
-  <v-card :variant="article.state.isRead ? 'flat' : 'outlined'">
+  <v-card :variant="article.state.isRead ? 'flat' : 'outlined'" style="max-height: 256px">
     <div class="d-flex flex-no-wrap justify-space-between">
-      <v-img
+      <NuxtPicture
         v-if="article.mediaAttachments?.length"
         :src="article.mediaAttachments?.[0].url"
         cover
+        format="avif,webp"
+        max-height="256px"
         max-width="300px"
         width="300px"
-      ></v-img>
+      />
       <div class="w-100">
         <v-card-title
           class="cursor-pointer text-primary wrap-title"
@@ -27,7 +29,7 @@
           </v-chip-group>
         </v-card-subtitle>
         <v-card-text :class="{ 'text-grey-darken-1': article.state.isRead }">
-          {{ article.description }}
+          {{ truncateText(article.description, 512) }}
         </v-card-text>
       </div>
     </div>
@@ -35,8 +37,10 @@
 </template>
 
 <script lang="ts" setup>
-// Props
+import { useTruncate } from '~/composables/useTruncate' // Props
 import type { Article } from '~/types/entities/Article'
+
+const { truncateText } = useTruncate()
 
 const props = defineProps({
   article: {
